@@ -20,6 +20,7 @@ package gunit
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -30,6 +31,7 @@ import (
 type tt interface {
 	Log(args ...interface{})
 	Fail()
+	FailNow()
 	Failed() bool
 }
 
@@ -37,13 +39,14 @@ type tt interface {
 // handles custom logging for xUnit style tests as an embedded field.
 type Fixture struct {
 	t       tt
+	fatalAssertions []reflect.Value
 	log     *bytes.Buffer
 	verbose bool
 }
 
 // NewFixture is called by generated code.
 func NewFixture(t tt, verbose bool) *Fixture { // FUTURE: un-export this along with deletion of 'gunit' command code.
-	return &Fixture{t: t, verbose: verbose, log: &bytes.Buffer{}}
+	return &Fixture{t: t, fatalAssertions: []reflect.Value{}, verbose: verbose, log: &bytes.Buffer{}}
 }
 
 // Parallel is now deprecated. At one point it was analogous to *testing.T.Parallel.
@@ -63,8 +66,19 @@ func (this *Fixture) So(
 	if !ok {
 		this.t.Fail()
 		this.reportFailure(failure)
+
+		for _, x := range this.fatalAssertions {
+			if reflect.ValueOf(assert).Pointer() == x.Pointer() {
+				this.Println("* (Additional tests may have been skipped as a result of the failure shown above.)")
+				this.t.FailNow()
+			}
+		}
 	}
 	return ok
+}
+
+func (this *Fixture) AddFatalAssertion(assertion func(actual interface{}, expected ...interface{}) string) {
+	this.fatalAssertions = append(this.fatalAssertions, reflect.ValueOf(assertion))
 }
 
 func (this *Fixture) Ok(condition bool, messages ...string) {
