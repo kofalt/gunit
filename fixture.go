@@ -26,12 +26,13 @@ import (
 // github.com/smartystreets/assertions/should
 type Fixture struct {
 	t       testingT
+	fatalAssertions []reflect.Value
 	log     *bytes.Buffer
 	verbose bool
 }
 
 func newFixture(t testingT, verbose bool) *Fixture {
-	return &Fixture{t: t, verbose: verbose, log: &bytes.Buffer{}}
+	return &Fixture{t: t, fatalAssertions: []reflect.Value{}, verbose: verbose, log: &bytes.Buffer{}}
 }
 
 // So is a convenience method for reporting assertion failure messages,
@@ -42,8 +43,19 @@ func (this *Fixture) So(actual interface{}, assert assertion, expected ...interf
 	failed := len(failure) > 0
 	if failed {
 		this.fail(failure)
+
+		for _, x := range this.fatalAssertions {
+			if reflect.ValueOf(assert).Pointer() == x.Pointer() {
+				this.Println("* (Additional tests may have been skipped as a result of the failure shown above.)")
+				this.t.FailNow()
+			}
+		}
 	}
 	return !failed
+}
+
+func (this *Fixture) AddFatalAssertion(assertion func(actual interface{}, expected ...interface{}) string) {
+	this.fatalAssertions = append(this.fatalAssertions, reflect.ValueOf(assertion))
 }
 
 // Assert tests a boolean which, if not true, marks the current test case as failed and
