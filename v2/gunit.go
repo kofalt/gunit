@@ -50,11 +50,14 @@ func Run(outerFixture any, t *testing.T, options ...Option) {
 			continue
 		}
 
-		if strings.HasPrefix(name, "Test") {
-			testNames = append(testNames, name)
-		} else if config.skipAllTests || strings.HasPrefix(name, "SkipTest") {
+		switch {
+		case config.skipAllTests && (strings.HasPrefix(name, "Test") || strings.HasPrefix(name, "FocusTest")):
 			skippedTestNames = append(skippedTestNames, name)
-		} else if strings.HasPrefix(name, "FocusTest") {
+		case strings.HasPrefix(name, "Test"):
+			testNames = append(testNames, name)
+		case strings.HasPrefix(name, "SkipTest"):
+			skippedTestNames = append(skippedTestNames, name)
+		case strings.HasPrefix(name, "FocusTest"):
 			focusedTestNames = append(focusedTestNames, name)
 		}
 	}

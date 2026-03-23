@@ -197,3 +197,45 @@ type Suite08 struct {
 func (this *Suite08) Test1() {
 	panic("boink")
 }
+
+///////////////////////////
+
+func TestSkipAll(t *testing.T) {
+	fixture := &Suite09{}
+
+	gunit.Run(fixture, t, gunit.Options.SkipAll())
+
+	fixture.So(fixture.events, should.BeEmpty)
+}
+
+type Suite09 struct {
+	*gunit.Fixture
+	events []string
+}
+
+func (this *Suite09) SetupSuite()         { this.record("SetupSuite") }
+func (this *Suite09) TeardownSuite()      { this.record("TeardownSuite") }
+func (this *Suite09) Setup()              { this.record("Setup") }
+func (this *Suite09) Teardown()           { this.record("Teardown") }
+func (this *Suite09) Test1()              { this.record("Test1") }
+func (this *Suite09) Test2()              { this.record("Test2") }
+func (this *Suite09) record(event string) { this.events = append(this.events, event) }
+
+///////////////////////////
+
+func TestSkipAllOverridesFocus(t *testing.T) {
+	fixture := &Suite10{}
+
+	gunit.Run(fixture, t, gunit.Options.SkipAll())
+
+	fixture.So(fixture.events, should.BeEmpty)
+}
+
+type Suite10 struct {
+	*gunit.Fixture
+	events []string
+}
+
+func (this *Suite10) FocusTest1()         { this.record("FocusTest1") }
+func (this *Suite10) Test2()              { this.record("Test2") }
+func (this *Suite10) record(event string) { this.events = append(this.events, event) }
