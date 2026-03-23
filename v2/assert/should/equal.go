@@ -73,7 +73,7 @@ func report(a, b any) string {
 func simpleDiff(a, b any) string {
 	aType := fmt.Sprintf("(%v)", reflect.TypeOf(a))
 	bType := fmt.Sprintf("(%v)", reflect.TypeOf(b))
-	longestType := int(math.Max(float64(len(aType)), float64(len(bType))))
+	longestType := max(len(aType), len(bType))
 	aType += strings.Repeat(" ", longestType-len(aType))
 	bType += strings.Repeat(" ", longestType-len(bType))
 	aFormat := fmt.Sprintf(format(a), a)
