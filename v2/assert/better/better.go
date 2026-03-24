@@ -21,6 +21,7 @@ var (
 	BeLessThanOrEqualTo    = wrapFatal(should.BeLessThanOrEqualTo)
 	BeNil                  = wrapFatal(should.BeNil)
 	BeTrue                 = wrapFatal(should.BeTrue)
+	BeZeroValue            = wrapFatal(should.BeZeroValue)
 	Contain                = wrapFatal(should.Contain)
 	EndWith                = wrapFatal(should.EndWith)
 	Equal                  = wrapFatal(should.Equal)
@@ -44,6 +45,7 @@ var NOT = struct {
 	BeLessThan             assert.Assertion
 	BeLessThanOrEqualTo    assert.Assertion
 	BeNil                  assert.Assertion
+	BeZeroValue            assert.Assertion
 	Contain                assert.Assertion
 	Equal                  assert.Assertion
 	HappenOn               assert.Assertion
@@ -57,6 +59,7 @@ var NOT = struct {
 	BeLessThan:             wrapFatal(should.NOT.BeLessThan),
 	BeLessThanOrEqualTo:    wrapFatal(should.NOT.BeLessThanOrEqualTo),
 	BeNil:                  wrapFatal(should.NOT.BeNil),
+	BeZeroValue:            wrapFatal(should.NOT.BeZeroValue),
 	Contain:                wrapFatal(should.NOT.Contain),
 	Equal:                  wrapFatal(should.NOT.Equal),
 	HappenOn:               wrapFatal(should.NOT.HappenOn),
