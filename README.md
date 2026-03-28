@@ -13,6 +13,7 @@ Installation:
 $ go get github.com/smarty/gunit/v2
 ```
 
+Rationale of the changes in v2 are explained [here](https://github.com/smarty/gunit/issues/37#issuecomment-4145886903).
 
 ## v1
 
@@ -28,15 +29,15 @@ $ go get github.com/smarty/gunit
 
 We now present `gunit`, yet another testing tool for Go.
 
-> Not again... ([GoConvey](http://goconvey.co) was crazy enough...but sort of cool, ok I'll pay attention...)
+> Not again... ([GoConvey](https://github.com/smartystreets/goconvey) was crazy enough...but sort of cool, ok I'll pay attention...)
 
-No wait, this tool has some very interesting properties. It's a mix of good things provided by the built-in testing package, the [assertions](https://github.com/smarty/assertions) you know and love from the [GoConvey](http://goconvey.co) project, the [xUnit](https://en.wikipedia.org/wiki/XUnit) testing style (the first real unit testing framework), and it's all glued together with `go test`.
+No wait, this tool has some very interesting properties. It's a mix of good things provided by the built-in testing package, the [assertions](https://github.com/smarty/assertions) you know and love from the [GoConvey](https://github.com/smartystreets/goconvey) project, the [xUnit](https://en.wikipedia.org/wiki/XUnit) testing style (the first real unit testing framework), and it's all glued together with `go test`.
 
 > Blah, blah, yeah, yeah. Ok, so what's wrong with just using the standard "testing" package? What's better about this `gunit` thing?
 
 The convention established by the "testing" package and the `go test` tool only allows for local function scope:
 
-```
+```go
 func TestSomething(t *testing.T) {
 	// blah blah blah
 }
@@ -45,7 +46,6 @@ func TestSomething(t *testing.T) {
 This limited scope makes extracting functions or structs inconvenient as state will have to be passed to such extractions or state returned from them. It can get messy to keep a test nice and short. Here's the basic idea of what the test author using `gunit` would implement in a `*_test.go` file:
 
 ```go
-
 package examples
 
 import (
@@ -53,7 +53,7 @@ import (
 	"testing"
 
 	"github.com/smarty/gunit/v2"
-	"github.com/smarty/gunit/v2/should"
+	"github.com/smarty/gunit/v2/assert/should"
 )
 
 func TestExampleFixture(t *testing.T) {
@@ -82,7 +82,7 @@ func (this *ExampleFixture) TestWithAssertions() {
 	// package at github.com/smarty/assertions/should
 	// to perform assertions:
 	this.So(42, should.Equal, 42)
-	this.So("Hello, World!", should.ContainSubstring, "World")
+	this.So("Hello, World!", should.Contain, "World")
 }
 
 func (this *ExampleFixture) SkipTestWithNothing() {
@@ -113,7 +113,7 @@ func TestExampleFixture(t *testing.T) {
 }
 ```
 
-[Advanced Examples](https://github.com/smarty/gunit/tree/master/advanced_examples)
+[Bowling Example](https://github.com/smarty/gunit/blob/master/v2/examples/bowling_game_test.go)
 
 ----------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ For users of JetBrains IDEs, here's LiveTemplate you can use for generating the 
 - Description: `Generate gunit Fixture boilerplate`
 - Template Text:
 
-```
+```go
 func Test$NAME$Fixture(t *testing.T) {
     gunit.Run(new($NAME$Fixture), t)
 }
